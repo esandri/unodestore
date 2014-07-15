@@ -1,0 +1,7 @@
+{ "cookie":
+   { "path": "/",
+     "expires": null,
+     "originalMaxAge": null,
+     "httpOnly": true 
+    } 
+}
