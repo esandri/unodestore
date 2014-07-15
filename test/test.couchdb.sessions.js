@@ -19,7 +19,7 @@ us.setDriver('couchdb');
 				ssl: false,
 				cache: false,
 				user: 'admin',
-				password: 'esan2000',
+				password: '',
 				database: 'session'
 			}, callback);		
 		},
