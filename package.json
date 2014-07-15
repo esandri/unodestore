@@ -1,0 +1,19 @@
+{
+  "name": "unodestore",
+  "version": "0.1.0",
+  "description": "Universal storage library",
+  "main": "./lib/unstore.js",
+  "scripts": {
+    "test": "nodeunit test/test.couchdb.us.js"
+  },
+  "repository": "",
+  "keywords": ["database"],
+  "author": "Emanuele Sandri <esandri@gmail.com>",
+  "license": "BSD",
+  "readmeFilename": "README.md",
+  "dependencies": 
+    { "underscore"    : "~1.4.4"
+    , "async"         : "~0.2.9"
+    , "nano"          : "~4.1.1"
+    }
+}
