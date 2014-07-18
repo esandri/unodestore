@@ -3,7 +3,6 @@
 'use strict';
 
 var unstore = require('../lib/unstore.js');
-var testCase = require('nodeunit').testCase;
 var async = require('async');
 
 
@@ -18,7 +17,7 @@ module.exports = {
 			ssl: false,
 			cache: false,
 			user: 'admin',
-			password: 'esan2000',
+			password: '',
 			database: 'teststore'
 		}, function(err, obj) {
 			if (err) {
@@ -32,7 +31,7 @@ module.exports = {
     tearDown: function (callback) {
 		this.us.closeConnection(callback);
     },
-    case1: testCase({
+    case1: {
 		step_fetchByTypeIdNoAccess: function (test) {
 			var me = this;
 			if (!this.us) {
@@ -326,6 +325,6 @@ module.exports = {
 				}
 			);
 		}
-	})
+	}
 	
 };
