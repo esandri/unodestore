@@ -3,117 +3,160 @@
 'use strict';
 
 var unstore = require('../lib/unstore.js');
+var testCase = require('nodeunit').testCase;
 var async = require('async');
 
-var us = new unstore.UnStore();
 
-us.setDriver('couchdb');
-(function() {
-	var testdo = null;
-	async.series({
-		step_openConnection: function(callback) {
-			console.log('execute openConnection');
-			us.openConnection({
-				host: 'localhost',
-				port: '5984',
-				ssl: false,
-				cache: false,
-				user: 'admin',
-				password: '',
-				database: 'unstore'
-			}, callback);		
-		},
-		step_fetchByTypeIdNoAccess: function(callback) {
-			console.log('execute fetchByTypeIdNoAccess');
-			us.fetchByTypeId(
+module.exports = {
+	setUp: function (callback) {
+		this.testobj = null;
+		this.us = new unstore.UnStore();
+		this.us.setDriver('couchdb');
+		this.us.openConnection({
+			host: 'localhost',
+			port: '5984',
+			ssl: false,
+			cache: false,
+			user: 'admin',
+			password: 'esan2000',
+			database: 'teststore'
+		}, function(err, obj) {
+			if (err) {
+				callback();
+				console.log(err.error);
+			} else {
+				callback();
+			}
+		});
+    },
+    tearDown: function (callback) {
+		this.us.closeConnection(callback);
+    },
+    case1: testCase({
+		step_fetchByTypeIdNoAccess: function (test) {
+			var me = this;
+			if (!this.us) {
+				console.log('execute fetchByTypeIdNoAccess this.us is null');
+				test.ok(false);
+				test.done();
+				return;
+			}
+
+			this.us.fetchByTypeId(
 				'test.type',
 				'ematest1',
 				'testparition',
 				{'noone':'noone'},
 				function(err, dobj) {
-					if(err) {
+					if (err) {
 						if (err.error === 'not_found') {
 							console.log('dataobject testparition:test.type:ematest1 not found => untested');
-							err = null;
 						} else if (err.error === 'forbidden') {
-							console.log('dataobject testparition:test.type:ematest1 no access => ok');
-							err = null;							
+							test.ok(true);
 						} 
 					} else {
-						testdo = dobj;
+						test.ok(false);
+						me.testdo = dobj;
 						console.warn('dataobject testparition:test.type:ematest1 access ok => fail');
 						console.dir(dobj);
 					}
-					callback(err, dobj);
+					test.done();
 				}
 			);
 		},		
-		step_fetchByTypeId: function(callback) {
-			console.log('execute fetchByTypeId');
-			us.fetchByTypeId(
+		step_fetchByTypeId: function (test) {
+			var me = this;			
+			me.us.fetchByTypeId(
 				'test.type',
 				'ematest1',
 				'testparition',
 				{'ema':'ema'},
-				function(err, dobj) {
+				function (err, dobj) {
 					if(err) {
 						if (err.error === 'not_found') {
 							console.log('dataobject testparition:test.type:ematest1 not found => untested');
-							err = null;
+						} else {
+							test.ok(false);
 						}
 					} else {
-						testdo = dobj;
-						console.log('dataobject testparition:test.type:ematest1 found => ok');
-						console.dir(dobj);
+						test.ok(true);
 					}
-					callback(err, dobj);
+					test.done();
 				}
 			);
 		},
-		step_saveDataObjectNoAccess: function(callback) {
-			console.log('execute saveDataObjectNoAccess');
-			if (testdo === null) {
-				console.log('test save no access skipped: dataobject not found');
-				callback(null, null);
-			} else {
-				testdo.obj.inc = testdo.obj.inc + 1;
-				us.dataObjectSave(testdo, {'noone':'noone', 'dante':'dante'}, function(err, dobj) {
-					if (err) {
-						if (err.error == 'forbidden') {
-							console.log('dataobject testparition:test.type:ematest1 no access to write => ok');
-							err = null;
-						}
+		step_saveDataObjectNoAccess: function (test) {
+			var me = this;	
+			me.us.fetchByTypeId(
+				'test.type',
+				'ematest1',
+				'testparition',
+				{'ema':'ema'}, 
+				function (err, testdo) {
+					test.ifError(err);
+					if (!testdo) {
+						console.log('test save no access skipped: dataobject not found');
+						test.done();
 					} else {
-						testdo = dobj;
-						console.warn('dataobject testparition:test.type:ematest1 access to write => fail!');
-						console.dir(dobj);
+						testdo.obj.inc = testdo.obj.inc + 1;
+						me.us.dataObjectSave(testdo, {'noone':'noone', 'dante':'dante'}, function (err, dobj) {
+							if (err) {
+								if (err.error == 'forbidden') {
+									test.ok(true);
+								} else {
+									test.ok(false);
+								}
+							} else {
+								test.ok(false);
+								testdo = dobj;
+								console.warn('dataobject testparition:test.type:ematest1 access to write => fail!');
+								console.dir(dobj);
+							}
+							test.done();
+						});
 					}
-					callback(err,dobj);
-				});
-			}
+				}
+			);
 		},		
-		step_saveDataObject: function(callback) {
-			console.log('execute saveDataObject');
-			if (testdo === null) {
-				var obj = require('./testobject.json');
-				testdo = {
-					type: 'test.type',
-					id: 'ematest1',
-					acl: {
-						readers: {'ema':'ema', 'simo':'simo'},
-						writers: {'ema':'ema', 'simo':'simo'}
-					},
-					partition: 'testparition',
-					obj: obj
-				};
-				testdo.obj.inc = 0;
-			} else {
-				testdo.obj.inc = testdo.obj.inc + 1;
-			}
-			us.dataObjectSave(testdo, {'ema':'ema', 'dante':'dante'}, callback);
+		step_saveDataObject: function (test) {
+			var me = this;
+			this.us.fetchByTypeId(
+				'test.type',
+				'ematest1',
+				'testparition',
+				{'ema':'ema'}, 
+				function (err, testdo) {
+					test.ifError(err);			
+					if (!testdo) {
+						var obj = require('./testobject.json');
+						testdo = {
+							type: 'test.type',
+							id: 'ematest1',
+							acl: {
+								readers: {'ema':'ema', 'simo':'simo'},
+								writers: {'ema':'ema', 'simo':'simo'}
+							},
+							partition: 'testparition',
+							obj: obj
+						};
+						testdo.obj.inc = 0;
+					} else {
+						testdo.obj.inc = testdo.obj.inc + 1;
+					}
+					me.us.dataObjectSave( testdo, {'ema':'ema', 'dante':'dante'}, function (err, obj) {
+						if (err) {
+							console.log(err.error);
+							test.ok(false);
+						} else {
+							test.ok(true);
+						}
+						test.done();
+					});
+				}
+			);
 		},
-		step_createView: function(callback) {
-			console.log('excute createView');
+		step_createView: function (test) {
+			var me = this;
 			
 			var summary = {
 				name: 'testview',
@@ -129,11 +172,18 @@ us.setDriver('couchdb');
 					{key: 'glossary.GlossDiv.GlossList.GlossEntry.GlossTerm', ordered: false}
 				]
 			};
-			us.summarySave(summary, callback);
+			me.us.summarySave(summary, function (err, obj) {
+				if (err) {
+					test.ok(false);
+				} else {
+					test.ok(true);
+				}
+				test.done();
+			});
 		},
 		
-		step_createViewPlayerState: function(callback) {
-			console.log('excute createViewPlayerState');
+		step_createViewPlayerState: function (test) {
+			var me = this;
 			
 			var summary = {
 				name: 'playerbystate',
@@ -146,10 +196,17 @@ us.setDriver('couchdb');
 					{key: 'height', ordered: false}
 				]
 			};
-			us.summarySave(summary, callback);
+			me.us.summarySave(summary,  function (err, obj) {
+				if (err) {
+					test.ok(false);
+				} else {
+					test.ok(true);
+				}
+				test.done();
+			});
 		},
-		step_createViewPlayerName: function(callback) {
-			console.log('excute createViewPlayerName');
+		step_createViewPlayerName: function (test) {
+			var me = this;
 			
 			var summary = {
 				name: 'playerbyname',
@@ -160,52 +217,49 @@ us.setDriver('couchdb');
 					{key: 'birthCountry', ordered: false}
 				]
 			};
-			us.summarySave(summary, callback);
+			me.us.summarySave(summary,  function (err, obj) {
+				if (err) {
+					test.ok(false);
+				} else {
+					test.ok(true);
+				}
+				test.done();
+			});
 		},		
-		step_deletePlayers: function(callback) {
-			console.log('excute deletePlayers');
+		step_deletePlayers: function (test) {
+			var me = this;
 			// fetch first 100 players by type and delete it! 
 			var delFunc = function(obj, callback) {
-				console.log('delete ' + obj.partition + ':' + obj.type + ':' + obj.id);
-				//console.dir(row);
-				us.dataObjectDelete(obj, {'ema':'ema'}, callback);
+				me.us.dataObjectDelete(obj, {'ema':'ema'}, callback);
 			};
-			us.fetchAllByType(
+			try {
+			me.us.fetchAllByType(
 				'player.basket',
-				0, 100,
+				0, 3000,
 				'testpartition',
 				['ema'],
 				function(err, obj) {
 					if (err) {
-						callback(err,obj);
+						test.ok(false);
+						test.done();
 					} else {
-						async.eachSeries(obj.rows, delFunc, callback);
-					}
-				}
-			);			
-		},
-		step_fetchAll: function(callback) {
-			console.log('excute fetchAll');
-
-			us.fetchAll(
-				0, 100,
-				'testpartition',
-				{'ema':'ema'},
-				function(err, obj) {
-					if (err) {
-						callback(err,obj);
-					} else {
-						obj.rows.forEach(function(row) {
-							console.log('fetched: ' + row.partition + ':' + row.type + ':' + row.id);							
+						async.eachSeries(obj.rows, delFunc, function (err, obj) {
+							if (err) {
+								test.ok(false);
+							} else {
+								test.ok(true);
+							}
+							test.done();
 						});
-						callback(null,null);
 					}
 				}
-			);			
-		},		
-		step_createPlayers: function(callback) {
-			console.log('excute createPlayers skip');
-			callback(null, null);
+			);
+			} catch (e) {
+				console.log(e);
+			} 
+		},	
+		step_createPlayers: function (test) {
+			var me = this;
 			
 			var doc,
 				arrPlayers = require('./players.json');
@@ -221,15 +275,39 @@ us.setDriver('couchdb');
 					partition: 'testpartition',
 					obj: obj
 				};
-				console.log('save player: ' + obj.lahmanID);
-				us.dataObjectSave(doc, {'ema':'ema'}, callback);
+				me.us.dataObjectSave(doc, {'ema':'ema'}, callback);
 			};
 			
-			async.eachSeries(arrPlayers, insFunc, callback);
+			async.eachSeries(arrPlayers, insFunc, function (err, obj) {
+				if (err) {
+					test.ok(false);
+				} else {
+					test.ok(true);
+				}
+				test.done();
+			});
 		},
-		step_searchPlayer: function(callback) {
-			console.log('execute searchPlayer');
-			us.summaryFetch(
+		step_fetchAll: function (test) {
+			var me = this;
+
+			me.us.fetchAll(
+				0, 100,
+				'testpartition',
+				{'ema':'ema'},
+				function(err, obj) {
+					if (err) {
+						test.ok(false);
+						test.done();
+					} else {
+						test.equal(obj.rows.length, 100, 'fetched rows are: ' + obj.rows.length);
+						test.done();
+					}
+				}
+			);			
+		},			
+		step_searchPlayer: function (test) {
+			var me = this;
+			me.us.summaryFetch(
 				'playerbystate', 
 				{
 					values: ['USA','CA'],
@@ -239,24 +317,15 @@ us.setDriver('couchdb');
 				['ema'],
 				function(err, obj) {
 					if (err) {
-						callback(err,obj);
+						test.ok(false);
+						test.done();
 					} else {
-						obj.rows.forEach(function(row){
-							console.dir(row);
-						});						
+						test.equal(obj.rows.length, 19, 'fetched rows are: ' + obj.rows.length);
+						test.done();
 					}
 				}
 			);
-		},
-		step_closeConnection: function(callback) {
-			us.closeConnection(callback);
 		}
-	},
-	function(err, results) {
-		if(err) {
-			console.error(err);	
-		} else {
-			console.log('test finish: ' + results);
-		}
-	});
-})();
+	})
+	
+};
