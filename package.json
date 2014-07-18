@@ -1,12 +1,15 @@
 {
   "name": "unodestore",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Unique storage library",
   "main": "./lib/unstore.js",
   "scripts": {
     "test": "nodeunit test/test.couchdb.us.js"
   },
-  "repository": "",
+  "repository": 
+    { "type" : "git"
+    , "url" : "http://github.com/esandri/unodestore.git"
+    },
   "keywords": ["document", "model", "schema", "database", "odm", "data", "datastore", "query", "nosql", "orm", "db"],
   "author": "Emanuele Sandri <esandri@hotmail.com>",
   "license": "BSD",

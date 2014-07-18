@@ -44,8 +44,8 @@ An example of *data object* is:
         id: 'sampleid1',
         partition: 'samplepartition',
         acl: {
-            readers: { 'admin': 'admin, 'public': 'public' },
-            writers: { 'admin': 'admin }
+            readers: { 'admin': 'admin', 'public': 'public' },
+            writers: { 'admin': 'admin' }
         },
         obj: {
             firstname: 'Jon',
@@ -117,15 +117,17 @@ The you can use the store. To save a data object:
         id: 'sampleid1',
         partition: 'samplepartition',
         acl: {
-            readers: { 'admin': 'admin, 'public': 'public' },
-            writers: { 'admin': 'admin }
+            readers: { 'admin': 'admin', 'public': 'public' },
+            writers: { 'admin': 'admin' }
         },
         obj: {
             firstname: 'Jon',
             lastname: 'Snow',
             age: 25,
+            status: 'live',
             characteristics: [
-                'you don\'t know nothing jon snow'
+                'you don\'t know nothing Jon Snow',
+                'really, he\'s still alive'
             ]
         }
     };
@@ -193,3 +195,14 @@ To fetch from a summary:
         }
     );
 
+
+## Install
+To install:
+
+    $ npm install unodestore
+
+To test:
+
+    $ npm test unodestore
+
+*testing require `nodeunit`*
