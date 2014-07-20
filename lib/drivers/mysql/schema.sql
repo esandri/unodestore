@@ -2,9 +2,9 @@ CREATE TABLE IF NOT EXISTS `dataobject` (
 	`uuid` int(11) NOT NULL AUTO_INCREMENT,
 	`type` varchar(128) DEFAULT NULL,
 	`partition` varchar(128) NOT NULL,
-	`objId` varchar(128) NOT NULL,
+	`id` varchar(128) NOT NULL,
 	PRIMARY KEY (`uuid`),
-	UNIQUE KEY `uc_dataobject` (`type`,`partition`,`objId`),
+	UNIQUE KEY `uc_dataobject` (`type`,`partition`,`id`),
 	KEY `type` (`type`)
 ) ENGINE={{storageEngine}};
 

@@ -66,7 +66,7 @@ module.exports = {
 					test.done();
 				}
 			);
-		}/*,		
+		},		
 		step_fetchByTypeId: function (test) {
 			var me = this;			
 			me.us.fetchByTypeId(
@@ -96,7 +96,6 @@ module.exports = {
 				'testparition',
 				{'ema':'ema'}, 
 				function (err, testdo) {
-					test.ifError(err);
 					if (!testdo) {
 						console.log('test save no access skipped: dataobject not found');
 						test.done();
@@ -120,7 +119,7 @@ module.exports = {
 					}
 				}
 			);
-		},		
+		},
 		step_saveDataObject: function (test) {
 			var me = this;
 			this.us.fetchByTypeId(
@@ -129,7 +128,11 @@ module.exports = {
 				'testparition',
 				{'ema':'ema'}, 
 				function (err, testdo) {
-					test.ifError(err);			
+					if (err) {
+						if (err.error === 'forbidden') {
+							test.ok(false);							
+						}
+					}					
 					if (!testdo) {
 						var obj = require('./testobject.json');
 						testdo = {
@@ -328,7 +331,7 @@ module.exports = {
 					}
 				}
 			);
-		}*/
+		}
 	}
 	
 };
