@@ -13,16 +13,30 @@ var test = {
 		} else {
 			console.log('FAIL');
 		}
+	},
+	equal: function(value, expected, message) {
+		if (value == expected) {
+			console.log('PASS');
+		} else {
+			console.log(message);
+		}
 	}
 };
 var baseobj = {
 	
 };
 async.eachSeries([
+	mytest.case1.step_fetchByTypeIdNoAccess,
 	mytest.case1.step_fetchByTypeId,
 	mytest.case1.step_saveDataObjectNoAccess,
 	mytest.case1.step_saveDataObject,
-	mytest.case1.step_createView
+	mytest.case1.step_createView,
+	mytest.case1.step_createViewPlayerState,
+	mytest.case1.step_createViewPlayerName,
+	mytest.case1.step_deletePlayers,
+	mytest.case1.step_createPlayers,
+	mytest.case1.step_fetchAll,
+	mytest.case1.step_searchPlayer
 ],
 function(item, callback) {
 	var testfunc = function () {
