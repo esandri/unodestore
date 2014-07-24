@@ -226,5 +226,5 @@ To test:
     $ npm test unodestore
 
 *testing require `nodeunit`*
-You have to create the user/password/database for mysql and the user/password for couchdb. The put the right values
+You have to create the user/password/database for mysql and the user/password for couchdb. Then put the right values
 into test.complete.js

@@ -1,3 +1,6 @@
+/**
+ * This script help me in debug with the command: node-debug .\test\debug-main.js
+ */
 
 var mytest = require('./test.mysql.us').case_couchdb;
 //var mytest = require('./test.mysql.us').case_mysql;
