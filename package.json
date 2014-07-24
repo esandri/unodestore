@@ -4,7 +4,7 @@
   "description": "Unique storage library",
   "main": "./lib/unstore.js",
   "scripts": {
-    "test": "nodeunit test/test.couchdb.us.js"
+    "test": "nodeunit test/test.complete.js"
   },
   "repository": 
     { "type" : "git"
