@@ -1,5 +1,6 @@
 
-var mytest = require('./test.mysql.us');
+var mytest = require('./test.mysql.us').case_couchdb;
+//var mytest = require('./test.mysql.us').case_mysql;
 var async = require('async');
 
 
@@ -26,17 +27,17 @@ var baseobj = {
 	
 };
 async.eachSeries([
-	mytest.case1.step_fetchByTypeIdNoAccess,
-	mytest.case1.step_fetchByTypeId,
-	mytest.case1.step_saveDataObjectNoAccess,
-	mytest.case1.step_saveDataObject,
-	mytest.case1.step_createView,
-	mytest.case1.step_createViewPlayerState,
-	mytest.case1.step_createViewPlayerName,
-	mytest.case1.step_deletePlayers,
-	mytest.case1.step_createPlayers,
-	mytest.case1.step_fetchAll,
-	mytest.case1.step_searchPlayer
+	mytest.fetchByTypeIdNoAccess,
+	mytest.fetchByTypeId,
+	mytest.saveDataObjectNoAccess,
+	mytest.saveDataObject,
+	mytest.createView,
+	mytest.createViewPlayerState,
+	mytest.createViewPlayerName,
+	//mytest.deletePlayers,
+	//mytest.createPlayers,
+	mytest.fetchAll,
+	mytest.searchPlayer
 ],
 function(item, callback) {
 	var testfunc = function () {
