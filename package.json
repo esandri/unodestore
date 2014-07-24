@@ -10,7 +10,7 @@
     { "type" : "git"
     , "url" : "http://github.com/esandri/unodestore.git"
     },
-  "keywords": ["document", "model", "schema", "database", "odm", "data", "datastore", "query", "nosql", "orm", "db"],
+  "keywords": ["document", "model", "schema", "database", "odm", "data", "datastore", "query", "nosql", "orm", "db", "mysql", "couchdb"],
   "author": "Emanuele Sandri <esandri@hotmail.com>",
   "license": "BSD",
   "readmeFilename": "README.md",
