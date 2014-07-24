@@ -16,7 +16,7 @@ requirements are not so complex, we just need for a storage of
  - indexes and summaries
 
 So, starting from this point of view, we can write some simple API that can work with all databases.
-I already wrote the driver for couchdb, but I'm pretty sure I can write the same API for MySQL, mongodb, 
+I already wrote the driver for couchdb, and mysql (slow, I'm working on), but I'm pretty sure I can write the same API for mongodb, 
 oracle, MsSql, Cassandra, orientdb etc.
 
 ## Fundamental Concepts
@@ -92,6 +92,8 @@ This view has two ordered columns so, as you can expect, you can lookup for *dat
 ## Usage
 To create a connection to the store, or create a new one
 
+With couchdb
+
     var unstore = require('unodestore');
     var store = new unstore.UnStore();
     store.setDriver('couchdb');
@@ -110,7 +112,25 @@ To create a connection to the store, or create a new one
         // do something with store
     });
 
-The you can use the store. To save a data object:
+With mysql
+
+    var unstore = require('unodestore');
+    var store = new unstore.UnStore();
+    store.setDriver('mysql');
+    store.openConnection({
+        host: 'localhost',
+        port: '3306',
+        user: 'username',
+        password: 'yourpassswordhere',
+        db: 'dbname'
+    }, function (err, obj) {
+        if (err) {
+            console.log(err.message);
+        }
+        // do something with store
+    });
+
+Then you can use the store. To save a data object:
 
     var dobj = {
         type: 'sample.test',
@@ -206,3 +226,5 @@ To test:
     $ npm test unodestore
 
 *testing require `nodeunit`*
+You have to create the user/password/database for mysql and the user/password for couchdb. The put the right values
+into test.complete.js
